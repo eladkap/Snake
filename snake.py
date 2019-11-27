@@ -3,6 +3,7 @@ from main_window import *
 import math
 
 
+# SNAKE #
 class Snake:
 	def __init__(self, x, y, size, speed, color):
 		self.x = x
@@ -44,5 +45,6 @@ class Snake:
 		return check_x_axis or check_y_axis
 		
 	def collide_food(self, food):
-		dest = math.sqrt(abs(self.x - food.x) ** 2 + abs(self.y - food.y) ** 2)
-		return dest < 1
+		return self.x == food.x and self.y == food.y
+		#dest = math.sqrt(abs(self.x - food.x) ** 2 + abs(self.y - food.y) ** 2)
+		#return dest < 1

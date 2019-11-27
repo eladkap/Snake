@@ -1,7 +1,7 @@
 import pygame
 from main_window import *
 
-
+# FOOD #
 class Food:
 	def __init__(self, x, y, size, color):
 		self.x = x
