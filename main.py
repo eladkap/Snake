@@ -2,96 +2,14 @@ import pygame
 from tkinter import *
 from tkinter import messagebox
 
+from main_window import *
+from board import *
+from snake import *
+from food import *
 from settings import *
 import random
 import math
 
-
-window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-clock = pygame.time.Clock()
-
-
-class Board:
-	def __init__(self, x, y, width, height, color, thickness):
-		self.x = x
-		self.y = y
-		self.width = width
-		self.height = height
-		self.color = color
-		self.thickness = thickness
-		
-	def draw(self):
-		pygame.draw.rect(window, self.color, (self.x, self.y, self.width, self.height), self.thickness)
-		
-	def set_color(self, color):
-		self.color = color
-	
-
-class Snake:
-	def __init__(self, x, y, size, speed, color):
-		self.x = x
-		self.y = y
-		self.size = size
-		self.color = color
-		self.speed = speed
-		self.velocity = (0, 0)
-		self.direction = 'S'
-	
-	def draw(self):
-		pygame.draw.rect(window, self.color, [self.x, self.y, self.size, self.size])
-
-	def set_direction(self, direction):
-		self.direction = direction
-		if direction == 'L':
-			self.velocity = (-self.speed, 0)
-		if direction == 'R':
-			self.velocity = (self.speed, 0)
-		if direction == 'U':
-			self.velocity = (0, -self.speed)
-		if direction == 'D':
-			self.velocity = (0, self.speed)
-		
-	def get_direction(self):
-		return self.direction
-		
-	def stop(self):
-		self.direction = 'S'
-		self.velocity = (0, 0)
-		
-	def update(self):	
-		self.x += self.velocity[0]
-		self.y += self.velocity[1]
-		
-	def collide_frame(self, board):
-		check_x_axis = self.x < board.x or self.x >= board.x + board.width
-		check_y_axis = self.y < board.y or self.y >= board.y + board.height
-		return check_x_axis or check_y_axis
-		
-	def collide_food(self, food):
-		dest = math.sqrt(abs(self.x - food.x) ** 2 + abs(self.y - food.y) ** 2)
-		return dest < 1
-	
-
-class Food:
-	def __init__(self, x, y, size, color):
-		self.x = x
-		self.y = y
-		self.size = size
-		self.color = color
-		
-	def draw(self):
-		pygame.draw.rect(window, self.color, [self.x, self.y, self.size, self.size])
-	
-'''
-class Apple:
-	def __init__(self, center, radius, color):
-		self.center = center
-		self.radius = radius
-		self.color = color
-		
-	def draw(self):
-		pygame.draw.circle(window, self.color, self.center, self.radius)	
-'''
 		
 class SnakeGame:
 	def __init__(self):
@@ -108,15 +26,15 @@ class SnakeGame:
 		self.generate_food()
 		
 	def position_snake(self):
-		snake_i = random.randint(0, BOARD_ROWS)
-		snake_j = random.randint(0, BOARD_COLS)
+		snake_i = random.randint(0, BOARD_ROWS - 1)
+		snake_j = random.randint(0, BOARD_COLS - 1)
 		snake_x = snake_i * TILE_SIZE + self.board.x
 		snake_y = snake_j * TILE_SIZE + self.board.y
 		self.snake = Snake(snake_x, snake_y, TILE_SIZE, SNAKE_SPEED, SNAKE_COLOR)
 		
 	def generate_food(self):
-		food_i = random.randint(0, BOARD_ROWS)
-		food_j = random.randint(0, BOARD_COLS)
+		food_i = random.randint(0, BOARD_ROWS - 1)
+		food_j = random.randint(0, BOARD_COLS - 1)
 		food_x = food_i * TILE_SIZE + self.board.x
 		food_y = food_j * TILE_SIZE + self.board.x
 		self.food = Food(food_x, food_y, TILE_SIZE, APPLE_COLOR)
@@ -136,7 +54,7 @@ class SnakeGame:
 	
 	def prompt_message(self, msg):
 		Tk().wm_withdraw()
-		messagebox.showinfo(msg, 'OK')
+		messagebox.showinfo('Snake', msg)
 	
 	def routine(self):
 		while not self.game_quit:
@@ -166,9 +84,7 @@ class SnakeGame:
 			
 			self.check_collision_with_frame()
 			self.check_collision_with_food()		
-			
-			
-				
+						
 				
 	def reset(self):
 		self.init()
