@@ -20,7 +20,6 @@ class SnakeGame:
 		self.game_over = False
 		self.game_quit = False
 		self.score = 0
-		
 		self.board = Board(BOARD_X, BOARD_Y, BOARD_WIDTH, BOARD_HEIGHT, BOARD_COLOR, BOARD_THICKNESS)
 		self.position_snake()
 		self.generate_food()
@@ -39,11 +38,12 @@ class SnakeGame:
 		food_y = food_j * TILE_SIZE + self.board.y
 		self.food = Food(food_x, food_y, TILE_SIZE, APPLE_COLOR)
 		
-	def check_collision_with_frame(self):
-		if self.snake.collide_frame(self.board):
+	def check_collision(self):
+		if self.snake.collide_frame(self.board) or self.snake.check_self_collision():
 			self.game_over = True
 			self.board.set_color(RED)
-			self.show_message('GAME OVER', RED)
+			msg = 'GAME OVER'
+			self.show_message(msg, [(SCREEN_WIDTH / 2) - (FONT_SIZE * len(msg) / 2), SCREEN_HEIGHT / 2], RED, None, FONT_SIZE)
 			pygame.display.update()
 			time.sleep(2)
 			
@@ -51,24 +51,32 @@ class SnakeGame:
 		if self.snake.collide_food(self.food):
 			self.score += SCORE_PTS_INCREASE
 			self.generate_food()
+			self.snake.lengthen()
 	
 	def message_box(self, msg):
 		Tk().wm_withdraw()
 		messagebox.showinfo('Snake', msg)
 		
-	def show_message(self, msg, color):
+	def show_message(self, msg, location, color, font_family, font_size):
+		font = pygame.font.SysFont(font_family, font_size)
 		text = font.render(msg, True, color)
-		window.blit(text, [(SCREEN_WIDTH / 2) - (FONT_SIZE * len(msg) / 2), SCREEN_HEIGHT / 2])
+		window.blit(text, location)
+	
+	def show_states(self):
+		self.show_message('SCORE: ' + str(self.score), [STATES_X, STATES_Y], BLACK, 'Arial', 20)
 	
 	def game_over_loop(self):
 		while self.game_over:
 			window.fill(WINDOW_BACKCOLOR)
-			self.show_message('Press SPACE to play again', BLACK)
+			msg = 'Press SPACE to play again'
+			self.show_message(msg, [(SCREEN_WIDTH / 2) - (FONT_SIZE * len(msg) / 2), SCREEN_HEIGHT / 2], BLACK, None, FONT_SIZE)
 			pygame.display.update()
 			for event in pygame.event.get():
 				if event.type == pygame.KEYDOWN:
 					if event.key == pygame.K_SPACE:
 						self.reset()
+				if event.type == pygame.QUIT:
+					self.quit()
 						
 	
 	def routine(self):
@@ -97,11 +105,12 @@ class SnakeGame:
 			self.food.draw()
 			self.snake.draw()
 			self.snake.update()
+			self.show_states()
 			
 			pygame.display.update()
 			clock.tick(FPS)
 			
-			self.check_collision_with_frame()
+			self.check_collision()
 			self.check_collision_with_food()		
 						
 				
