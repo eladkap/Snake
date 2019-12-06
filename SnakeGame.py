@@ -21,7 +21,8 @@ class SnakeGame:
 	def init(self):
 		self.game_over = False
 		self.game_quit = False
-		self.intro_flag = True
+		self.menu_flag = True
+		self.game_controls_flag = False
 		self.score = 0
 		self.board = Board(BOARD_X, BOARD_Y, BOARD_WIDTH, BOARD_HEIGHT, BOARD_COLOR, BOARD_THICKNESS)
 		self.position_snake()
@@ -29,8 +30,9 @@ class SnakeGame:
 		self.set_buttons()
 		
 	def set_buttons(self):
-		self.btn_play = Button(100, 500, 100, 50, 'PLAY', 'Arial', 20, BLACK, GREEN, LIGHT_GREEN)
-		self.btn_controls = Button(300, 500, 100, 50, 'CONTROLS', 'Arial', 20, BLACK, GREEN, LIGHT_GREEN)
+		self.btn_play = Button(50, 500, 100, 50, 'PLAY', 'Arial', 20, BLACK, GREEN, LIGHT_GREEN)
+		self.btn_controls = Button(200, 500, 100, 50, 'CONTROLS', 'Arial', 20, BLACK, GREEN, LIGHT_GREEN)
+		self.btn_main = Button(350, 500, 100, 50, 'MAIN', 'Arial', 20, BLACK, GREEN, LIGHT_GREEN)
 		self.btn_quit = Button(500, 500, 100, 50, 'QUIT', 'Arial', 20, BLACK, GREEN, LIGHT_GREEN)
 		
 	def position_snake(self):
@@ -87,22 +89,53 @@ class SnakeGame:
 		self.show_message('SCORE: ' + str(self.score), [STATES_X, STATES_Y], BLACK, FONT_FAMILY1, SMALL_FONT, False, 0)
 	
 	def start_game(self):
-		self.intro_flag = False
+		print('Start game')
+		self.routine()
 	
-	def intro(self):
-		while self.intro_flag:
+	def show_controls(self):
+		print('Show controls')
+		self.main_flag = False
+		self.game_controls_flag = True
+		while self.game_controls_flag:
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
 					self.quit()
-				if event.type == pygame.KEYDOWN:
-					if event.key == pygame.K_SPACE:
-						self.start_game()
-					if event.key == pygame.K_q:
-						self.quit()	
 		
 			window.fill(WHITE)
-			self.show_message('Snake', [0, 0], BLACK, FONT_FAMILY1, BIG_FONT, True, 0)
-			#self.show_message('Press SPACE to start game or Q to quit', [0, 0], BLUE, FONT_FAMILY1, MEDIUM_FONT, True, 50)
+			self.show_message('Game Controls', [0, 0], BLACK, FONT_FAMILY1, HUGE_FONT, True, -30)
+			self.show_message('Movement: Arrow keys', [0, 0], BLACK, FONT_FAMILY1, MEDIUM_FONT, True, 30)
+			self.show_message('Go to Main Screen: ESC', [0, 0], BLACK, FONT_FAMILY1, MEDIUM_FONT, True, 60)
+			self.show_message('Pause the Game: P', [0, 0], BLACK, FONT_FAMILY1, MEDIUM_FONT, True, 90)
+			
+			curr_mouse_pos = pygame.mouse.get_pos()
+			self.btn_play.draw(curr_mouse_pos)
+			self.btn_main.draw(curr_mouse_pos)
+			self.btn_quit.draw(curr_mouse_pos)
+			
+			# MOUSECLICK #
+			click = pygame.mouse.get_pressed()
+			if self.btn_play.mouseclick(curr_mouse_pos, click):
+				self.start_game()
+			if self.btn_quit.mouseclick(curr_mouse_pos, click):
+				self.quit()
+			if self.btn_main.mouseclick(curr_mouse_pos, click):
+				self.show_menu_screen()
+			# MOUSECLICK #
+			
+			pygame.display.update()
+			clock.tick(15)
+	
+	def show_menu_screen(self):
+		print('Main screen')
+		self.menu_flag = True
+		self.game_controls_flag = False
+		while self.menu_flag:
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					self.quit()	
+		
+			window.fill(WHITE)
+			self.show_message('Snake', [0, 0], BLACK, FONT_FAMILY1, HUGE_FONT, True, 0)
 			
 			curr_mouse_pos = pygame.mouse.get_pos()
 			self.btn_play.draw(curr_mouse_pos)
@@ -113,9 +146,10 @@ class SnakeGame:
 			click = pygame.mouse.get_pressed()
 			if self.btn_play.mouseclick(curr_mouse_pos, click):
 				self.start_game()
-			if self.btn_quit.mouseclick(curr_mouse_pos, click):
+			elif self.btn_quit.mouseclick(curr_mouse_pos, click):
 				self.quit()
-			
+			elif self.btn_controls.mouseclick(curr_mouse_pos, click):
+				self.show_controls()
 			# MOUSECLICK #
 			
 			pygame.display.update()
@@ -153,7 +187,7 @@ class SnakeGame:
 				if event.type == pygame.QUIT:
 					self.game_quit = True
 				if event.type == pygame.KEYDOWN:
-					if event.key == pygame.K_ESCAPE:
+					if event.key == pygame.K_p:
 						self.pause()
 					elif event.key == pygame.K_LEFT and self.snake.get_direction() != 'R':
 						self.snake.set_direction('L')
@@ -165,6 +199,8 @@ class SnakeGame:
 						self.snake.set_direction('D')
 					elif event.key == pygame.K_SPACE:
 						self.snake.stop()
+					elif event.key == pygame.K_ESCAPE:
+						self.show_menu_screen()
 					
 			window.fill(WINDOW_BACKCOLOR)	
 			self.board.draw()
@@ -188,14 +224,13 @@ class SnakeGame:
 				if event.type == pygame.QUIT:
 					self.quit()
 				if event.type == pygame.KEYDOWN:
-					if event.key == pygame.K_ESCAPE:
+					if event.key == pygame.K_p:
 						game_paused = False
 						self.board.set_color(BOARD_COLOR)
 					elif event.key == pygame.K_q:
 						self.quit()
-			#window.fill(WHITE)
 			self.show_message('PAUSED', [0, 0], BLACK, FONT_FAMILY1, BIG_FONT, True, 0)
-			self.show_message('Press ESC to resume game', [0, 0], BLUE, FONT_FAMILY1, MEDIUM_FONT, True, 50)	
+			self.show_message('Press P to resume game', [0, 0], BLUE, FONT_FAMILY1, MEDIUM_FONT, True, 50)	
 			self.board.draw()
 			pygame.display.update()
 			clock.tick(5)
@@ -213,10 +248,6 @@ class SnakeGame:
 snake_game = SnakeGame()
 # INITIALIZE GAME #
 
-# GAME INTRO #
-snake_game.intro()
-# GAME INTRO #
-
-# GAME ROUTINE #
-snake_game.routine()
-# GAME ROUTINE #
+# GAME MENU #
+snake_game.show_menu_screen()
+# GAME MENU #
