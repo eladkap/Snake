@@ -1,9 +1,12 @@
 # COLORS #
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-RED = (220, 0, 0)
-GREEN = (0, 220, 0)
+RED = (200, 0, 0)
+LIGHT_RED = (255, 0, 0)
+GREEN = (0, 180, 0)
+LIGHT_GREEN = (0, 240, 0)
 BLUE = (0, 0, 220)
+LIGHT_BLUE = (0, 0, 255)
 GRAY = (100, 100, 100)
 
 # WINDOW SETTINGS #
@@ -47,9 +50,8 @@ FONT_FAMILY1 = 'Arial'
 SCORE_PTS_INCREASE = 10
 
 # IMAGES #
-
-SNAKE_HEAD_IMG = 'image/snake_head.png'
-APPLE_IMG = 'image/apple.png'
+SNAKE_HEAD_IMG = 'snake_head.png'
+APPLE_IMG = 'apple.png'
 
 # TIMING #
 GAME_OVER_DELAY = 2
